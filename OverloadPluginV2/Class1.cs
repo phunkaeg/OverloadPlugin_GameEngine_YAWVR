@@ -1,4 +1,4 @@
-﻿using OverloadPluginV2.Properties;
+using OverloadPluginV2.Properties;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -15,7 +15,7 @@ using System.Resources;
 namespace OverloadPlugin
 {
     [Export(typeof(Game))]
-    [ExportMetadata("Overload", "Overload Motion Plugin")]
+    [ExportMetadata("Name", "Overload")] // Name that will appear in the plugin list.
     [ExportMetadata("Version", "1.0")]
 
     public class OverloadPlugin : Game
