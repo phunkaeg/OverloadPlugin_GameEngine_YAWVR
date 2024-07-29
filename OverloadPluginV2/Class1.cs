@@ -15,14 +15,14 @@ using System.Resources;
 namespace OverloadPlugin
 {
     [Export(typeof(Game))]
-    [ExportMetadata("Overload", "Overload Motion Plugin")]
+    [ExportMetadata("Name", "Overload")] // Name that will appear in the plugin list.
     [ExportMetadata("Version", "1.0")]
 
     public class OverloadPlugin : Game
     {
-        public int STEAM_ID => 0; // Will start this game on steam based on Steam ID
+        public int STEAM_ID => 448850; // Will start this game on steam based on Steam ID
 
-        public string PROCESS_NAME => "Overload Motion Plugin";
+        public string PROCESS_NAME => "olmod"; // Put here the exe name (without .exe) monitored by GE to maintain the plugin active.
 
         public bool PATCH_AVAILABLE => false; // Needs patch
 
@@ -34,7 +34,7 @@ namespace OverloadPlugin
 
         public System.Drawing.Image Background => Resources.background;
 
-        public string Description => "<h1> Overload Plugin </h1>";
+        public string Description => "Usage:<br>1. Install OLMOD (https://olmod.overloadmaps.com/)<br>2. Install gamemod.dll with telemetry (https://github.com/overload-development-community/olmod/issues/323)<br>3. Launch Olmod.exe to start the game ('Telemetry' must appear on the upper right corner of the game's main menu)."; // No title here, the name of the plugin is added automatically.
 
         private Thread readThread;
         private volatile bool running = false;
@@ -55,7 +55,7 @@ namespace OverloadPlugin
                         string telemetryData = Encoding.ASCII.GetString(data);
                         ProcessTelemetry(telemetryData);
                     }
-                    Thread.Sleep(20); // Reduce CPU usage
+                    // Thread.Sleep(20); // Reduce CPU usage - NB: Overloads sends UDP packets much too fast !!!
                 }
             }
             catch (Exception ex)
@@ -74,6 +74,9 @@ namespace OverloadPlugin
                     float roll = float.Parse(parts[0]);
                     float pitch = float.Parse(parts[1]);
                     float yaw = float.Parse(parts[2]);
+                    float VelocityX = float.Parse(parts[3]);
+                    float VelocityY = float.Parse(parts[4]);
+                    float VelocityZ = float.Parse(parts[5]);
                     float gForceX = float.Parse(parts[6]);
                     float gForceY = float.Parse(parts[7]);
                     float gForceZ = float.Parse(parts[8]);
@@ -83,9 +86,12 @@ namespace OverloadPlugin
                     controller.SetInput(1, pitch);
                     controller.SetInput(2, roll);
                     // Example: Assume inputs 3, 4, 5 are set for G-forces
-                    controller.SetInput(3, gForceX);
-                    controller.SetInput(4, gForceY);
-                    controller.SetInput(5, gForceZ);
+                    controller.SetInput(3, VelocityX);
+                    controller.SetInput(4, VelocityY);
+                    controller.SetInput(5, VelocityZ);
+                    controller.SetInput(6, gForceX);
+                    controller.SetInput(7, gForceY);
+                    controller.SetInput(8, gForceZ);
                 }
             }
             catch (Exception ex)
@@ -123,7 +129,7 @@ namespace OverloadPlugin
 
         public string[] GetInputData()
         {
-            return new string[] { "Yaw", "Pitch", "Roll" };
+            return new string[] { "Yaw", "Pitch", "Roll", "VelocityX", "VelocityY", "VelocityZ", "gForceX", "gForceY", "gForceZ" }; // Text of the inputs that appear in GE's dropdown
 
         }
 
