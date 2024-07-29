@@ -15,7 +15,7 @@ using System.Resources;
 namespace OverloadPlugin
 {
     [Export(typeof(Game))]
-    [ExportMetadata("Name", "Overload")] // Name that will appear in the plugin list.
+    [ExportMetadata("Overload", "Overload Motion Plugin")]
     [ExportMetadata("Version", "1.0")]
 
     public class OverloadPlugin : Game
