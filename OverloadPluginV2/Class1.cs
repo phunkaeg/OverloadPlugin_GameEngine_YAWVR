@@ -34,7 +34,7 @@ namespace OverloadPlugin
 
         public System.Drawing.Image Background => Resources.background;
 
-        public string Description => "Usage:<br>1. Install OLMOD (https://olmod.overloadmaps.com/)<br>2. Install gamemod.dll with telemetry (https://github.com/overload-development-community/olmod/issues/323)<br>3. Launch Olmod.exe to start the game ('Telemetry' must appear on the upper right corner of the game's main menu)."; // No title here, the name of the plugin is added automatically.
+        public string Description => "Usage:<br>1. Install OLMOD (https://olmod.overloadmaps.com/)<br>2. Install gamemod.dll with telemetry in main game folder.<br>3. Launch \"Olmod.exe -vrmode openvr\" to start the game ('Telemetry' must appear on the upper right corner of the game's main menu)."; // No title here, the name of the plugin is added automatically.
 
         private Thread readThread;
         private volatile bool running = false;
@@ -80,6 +80,11 @@ namespace OverloadPlugin
                     float gForceX = float.Parse(parts[6]);
                     float gForceY = float.Parse(parts[7]);
                     float gForceZ = float.Parse(parts[8]);
+                    float boosting = float.Parse(parts[9]);
+                    float primaryFire = float.Parse(parts[10]);
+                    float secondaryFire = float.Parse(parts[11]);
+                    float pickedUpItem = float.Parse(parts[12]);
+                    float damageTaken = float.Parse(parts[13]);
 
                     // Set inputs based on parsed data
                     controller.SetInput(0, yaw);
@@ -92,6 +97,11 @@ namespace OverloadPlugin
                     controller.SetInput(6, gForceX);
                     controller.SetInput(7, gForceY);
                     controller.SetInput(8, gForceZ);
+                    controller.SetInput(9, boosting);
+                    controller.SetInput(10, primaryFire);
+                    controller.SetInput(11, secondaryFire);
+                    controller.SetInput(12, pickedUpItem);
+                    controller.SetInput(13, damageTaken);
                 }
             }
             catch (Exception ex)
@@ -113,7 +123,10 @@ namespace OverloadPlugin
 
         public List<Profile_Component> DefaultProfile()
         {
-            return new List<Profile_Component>();
+            string defProfile = "{\"GameName\":\"Overload\",\"Name\":\"Default profile\",\"components\":[{\"Constant\":false,\"Input_index\":4,\"Output_index\":1,\"MultiplierPos\":5.0,\"MultiplierNeg\":5.0,\"Offset\":0.0,\"Inverse\":false,\"Limit\":-1.0,\"Smoothing\":1.0,\"Enabled\":true,\"Spikeflatter\":{\"Enabled\":false,\"Limit\":100.0,\"Strength\":0.5},\"Deadzone\":0.0,\"Type\":0,\"Condition\":[],\"Math\":[]},{\"Constant\":false,\"Input_index\":8,\"Output_index\":1,\"MultiplierPos\":1.0,\"MultiplierNeg\":1.0,\"Offset\":0.0,\"Inverse\":true,\"Limit\":-1.0,\"Smoothing\":1.0,\"Enabled\":true,\"Spikeflatter\":{\"Enabled\":false,\"Limit\":100.0,\"Strength\":0.5},\"Deadzone\":0.0,\"Type\":0,\"Condition\":[],\"Math\":[]},{\"Constant\":false,\"Input_index\":3,\"Output_index\":2,\"MultiplierPos\":3.0,\"MultiplierNeg\":3.0,\"Offset\":0.0,\"Inverse\":false,\"Limit\":-1.0,\"Smoothing\":1.0,\"Enabled\":true,\"Spikeflatter\":{\"Enabled\":false,\"Limit\":100.0,\"Strength\":0.5},\"Deadzone\":0.0,\"Type\":0,\"Condition\":[],\"Math\":[]},{\"Constant\":false,\"Input_index\":6,\"Output_index\":2,\"MultiplierPos\":1.0,\"MultiplierNeg\":1.0,\"Offset\":0.0,\"Inverse\":false,\"Limit\":-1.0,\"Smoothing\":1.0,\"Enabled\":true,\"Spikeflatter\":{\"Enabled\":false,\"Limit\":100.0,\"Strength\":0.5},\"Deadzone\":0.0,\"Type\":0,\"Condition\":[],\"Math\":[]},{\"Constant\":false,\"Input_index\":5,\"Output_index\":0,\"MultiplierPos\":2.0,\"MultiplierNeg\":2.0,\"Offset\":0.0,\"Inverse\":false,\"Limit\":-1.0,\"Smoothing\":1.0,\"Enabled\":true,\"Spikeflatter\":{\"Enabled\":false,\"Limit\":100.0,\"Strength\":0.5},\"Deadzone\":0.0,\"Type\":1,\"Condition\":[],\"Math\":[]},{\"Constant\":false,\"Input_index\":10,\"Output_index\":3,\"MultiplierPos\":40.0,\"MultiplierNeg\":40.0,\"Offset\":0.0,\"Inverse\":false,\"Limit\":-1.0,\"Smoothing\":1.0,\"Enabled\":true,\"Spikeflatter\":{\"Enabled\":false,\"Limit\":100.0,\"Strength\":0.5},\"Deadzone\":0.0,\"Type\":0,\"Condition\":[],\"Math\":[]},{\"Constant\":false,\"Input_index\":10,\"Output_index\":4,\"MultiplierPos\":50.0,\"MultiplierNeg\":50.0,\"Offset\":0.0,\"Inverse\":false,\"Limit\":-1.0,\"Smoothing\":1.0,\"Enabled\":true,\"Spikeflatter\":{\"Enabled\":false,\"Limit\":100.0,\"Strength\":0.5},\"Deadzone\":0.0,\"Type\":0,\"Condition\":[],\"Math\":[]}],\"effects\":{\"EffectID\":1,\"InputID\":7,\"Multiplier\":25.0,\"Colors\":[{\"R\":66,\"G\":135,\"B\":245},{\"R\":80,\"G\":80,\"B\":80},{\"R\":128,\"G\":3,\"B\":117},{\"R\":110,\"G\":201,\"B\":12}]},\"functions\":[]}";
+            var MyComponentsList = new List<Profile_Component>();
+            MyComponentsList = dispatcher.JsonToComponents(defProfile);
+            return MyComponentsList;
         }
 
         public void Exit()
@@ -129,8 +142,7 @@ namespace OverloadPlugin
 
         public string[] GetInputData()
         {
-            return new string[] { "Yaw", "Pitch", "Roll", "VelocityX", "VelocityY", "VelocityZ", "gForceX", "gForceY", "gForceZ" }; // Text of the inputs that appear in GE's dropdown
-
+            return new string[] { "Yaw", "Pitch", "Roll", "RollSpeed", "PitchSpeed", "YawSpeed", "SwaySpeed", "HeaveSpeed", "SurgeSpeed", "BoostActive", "PrimaryFire", "SecondaryFire", "GotItem", "DamageTaken" }; // Text of the inputs that appear in GE's dropdown
         }
 
         public void Init()
